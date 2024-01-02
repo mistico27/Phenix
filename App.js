@@ -42,7 +42,42 @@ function ktc(k) {
   }
 
 //jarvis function initiate
+if(localStorage.getItem("jarvis_setup") !== null){
+    
+}
 
+///jarvis information set up
+const setup = document.querySelector(".jarvis_setup");
+setup.style.display="none";
+if(localStorage.getItem("jarvis_setup") === null){
+    setup.style.display="block";
+    setup.querySelector("button").addEventListener("click",userInfo);
+}
+
+///user info function
+function userInfo(){
+    let setupinfo = {
+        name:setup.querySelectorAll("input")[0].value,
+        bio:setup.querySelectorAll("input")[1].value,
+        location:setup.querySelectorAll("input")[2].value,
+        facebook:setup.querySelectorAll("input")[3].value,
+        github:setup.querySelectorAll("input")[4].value,
+    } 
+
+    let testArr=[];
+    setup.querySelectorAll("input").forEach((e)=>{
+        testArr.push(e.value);
+    }); 
+
+    if(testArr.includes("")){
+        readOut("Sir enter your information");
+    }else{
+        localStorage.clear();
+        localStorage.setItem("jarvis_setup",JSON.stringify(setupinfo));
+        setup.style.display="none";
+       weather(JSON.parse(localStorage.getItem("jarvis_setup")).location)
+    }
+}
 
 
 
@@ -60,6 +95,7 @@ recognition.onresult = function(event){
     let current = event.resultIndex;
     let transcript=event.results[current][0].transcript;
     transcript=transcript.toLowerCase();
+    let userData =localStorage.getItem("jarvis_setup");
     console.log(`my words: ${transcript}`);
 
     if(transcript.includes("hello, simba") || transcript.includes("hi simba")){
@@ -70,11 +106,6 @@ recognition.onresult = function(event){
         readOut("sure sir, opening youtube");
         window.open("https://www.youtube.com/");
     }    
-
-    if(transcript.includes("open google")){
-        readOut("sure sir, opening google");
-        window.open("https://www.google.com/");
-    }   
 
     if(transcript.includes("search for")){
         readOut("yes my master this is the result");
@@ -97,7 +128,10 @@ recognition.onresult = function(event){
     }   
 
 
-
+    if(transcript.includes("open my github")){
+        readOut("sure sir, opening your project github i am happy to serve you ");
+        window.open(`https://github.com/${JSON.parse(userData).github}`);
+    }   
 
 
     if(transcript.includes("open my shop")){
@@ -144,7 +178,7 @@ function readOut(message){
 
 //speak
 speakBtn.addEventListener("click",()=>{
-    readOut("hi i am phenix, my creator is Christian beltran,  so i am mexican i believe, and that is amazing, so lets code!! ");
+    readOut("hi my name is simba, but i am a fenix, my creator is Christian beltran,  so i am mexican i believe, and that is amazing, so lets code!! ");
 });
 
 //window on load
