@@ -66,7 +66,7 @@ machine *{
 #time{
     color:white;
     top:10px;
-    left:10px;
+    left:65px;
 }
 
 .in_middle{
@@ -126,11 +126,16 @@ machine *{
     height: 50px;
 }
 
+#startingSimba{
+    background-color: brown;
+    left: 75%;
+    width: 100px;
+}
+
 .battery{
-    top: 10px;
     left: 50%;
     width: 100px;
-    transform: translate(-50%);
+    transform: translateX(-50%);
 }
 
 .clock{
@@ -155,19 +160,19 @@ machine *{
     position: static;
 }
 
-.messages{
+.messages {
     bottom: 0;
     left: 50%;
-    transform: translate(-50%,0);
-    max-height: 600px;
-    overflow: auto;
+    transform: translateX(-50%);
+    height: 400px;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     padding-bottom: 15px;
     z-index: 1000;
-}
+  }
 
 .messages::-webkit-scrollbar{
     display: none;
