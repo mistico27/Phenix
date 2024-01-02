@@ -2,6 +2,45 @@
 const startBtn = document.querySelector("#start");
 const stopBtn = document.querySelector("#stop");
 const speakBtn = document.querySelector("#speakUp");
+const time = document.querySelector("#time");
+const battery =document.querySelector("#battery");
+const internet =document.querySelector("#internet");
+const turnOn = document.querySelector("#turn_on");
+const msgs=document.querySelector(".messages");
+
+
+///creating a chat
+function createMSG(who,msg){
+    let newMessage = document.createElement("p");
+    newMessage.innerText = msg;
+    newMessage.setAttribute("class",who)
+    msgs.appendChild(newMessage)
+}
+
+
+document.querySelector("#start_simba_btn").addEventListener("click",()=>{
+    recognition.start();
+});
+//simba like jarvis commands
+let SimbaComs = [];
+SimbaComs.push("hi friday");
+SimbaComs.push("what are your commands");
+SimbaComs.push("close this - to close opened popups");
+SimbaComs.push(
+  "change my information - information regarding your acoounts and you"
+);
+SimbaComs.push("whats the weather or temperature");
+SimbaComs.push("show the full weather report");
+SimbaComs.push("are you there - to check Simba presence");
+SimbaComs.push("shut down - stop voice recognition");
+SimbaComs.push("open google");
+SimbaComs.push('search for "your keywords" - to search on google ');
+SimbaComs.push("open whatsapp");
+SimbaComs.push("open youtube");
+SimbaComs.push('play "your keywords" - to search on youtube ');
+SimbaComs.push("close this youtube tab - to close opened youtube tab");
+SimbaComs.push("open github");
+SimbaComs.push("open my github profile");
 
 
 function weather(location) {
@@ -41,9 +80,87 @@ function ktc(k) {
     return k.toFixed(2);
   }
 
+//time set up
+let date = new Date()
+let hrs=date.getHours()
+let min = date.getMinutes()
+let sec = date.getSeconds()
+
+///autoSimba
+function autoSimba(){
+    setTimeout(()=>{
+        recognition.start();
+    },1000);
+}
+
+
+
+///onload()
+window.onload = () =>{
+    ///onStart
+   
+
+    turnOn.addEventListener("onend",()=>{
+        setTimeout(()=>{
+            autoSimba();
+            readOut("I am ready Sir, how can i help you");
+            if(localStorage.getItem("jarvis_setup")===null){
+                readOut("Sir, please fill out the form");    
+            }
+        },200)
+    })
+
+    SimbaComs.forEach((e)=>{
+        document.querySelector(".commands").innerHTML +=`<p>#${e}</p><br/>`
+    })
+
+
+    readOut(" ");
+   time.textContent = `${hrs}: ${min}: ${sec}`
+    setInterval(()=>{
+        let date = new Date()
+        let hrs=date.getHours()
+        let min = date.getMinutes()
+        let sec = date.getSeconds()
+        time.textContent = `${hrs}: ${min}: ${sec}`
+
+    },1000);
+
+    //battery set up
+    let batteryPromise = navigator.getBattery()
+    batteryPromise.then(batteryCallback)
+
+    function batteryCallback(batteryObject){
+        printBatteryStatus(batteryObject);
+        setInterval(()=>{
+            printBatteryStatus(batteryObject);
+            navigator.onLine?(internet.textContent="online"):(internet.textContent="offline")
+        },5000);
+    }
+
+    function printBatteryStatus(batteryObject){
+        battery.textContent=`${batteryObject.level*100} %`;
+        if(batteryObject.charging =true){
+            document.querySelector(".battery").style ="200px";  
+            battery.textContent = `${batteryObject.level*100} % charging`
+        }
+    }
+
+    //internet set up
+    navigator.onLine?(internet.textContent="online"):(internet.textContent="offline")
+    setInterval(()=>{
+        
+        navigator.onLine?(internet.textContent="online"):(internet.textContent="offline")
+ 
+    },6000);
+}
+
+
+
+
 //jarvis function initiate
 if(localStorage.getItem("jarvis_setup") !== null){
-    
+    weather(JSON.parse(localStorage.getItem("jarvis_setup")).location)
 }
 
 ///jarvis information set up
@@ -98,9 +215,25 @@ recognition.onresult = function(event){
     let userData =localStorage.getItem("jarvis_setup");
     console.log(`my words: ${transcript}`);
 
+    createMSG("usermsg",transcript);
+
     if(transcript.includes("hello, simba") || transcript.includes("hi simba")){
         readOut("Hello sir how are you");
     }
+
+    if(transcript.includes("close")){
+        readOut("ok sir closed");
+        document.querySelector(".commands").style.display="none"
+        setup.style.display="none";
+    }
+
+
+
+    if(transcript.includes("your commands")){
+        readOut("This are the list of my commands Sir, i must follow this ones");
+        document.querySelector(".commands").style.display="block"
+    }
+
 
     if(transcript.includes("open youtube")){
         readOut("sure sir, opening youtube");
@@ -174,6 +307,7 @@ function readOut(message){
     speech.volume=1;
     window.speechSynthesis.speak(speech);
     console.log("speaking out");
+    createMSG("jmsg",message);
 }
 
 //speak
@@ -181,8 +315,5 @@ speakBtn.addEventListener("click",()=>{
     readOut("hi my name is simba, but i am a fenix, my creator is Christian beltran,  so i am mexican i believe, and that is amazing, so lets code!! ");
 });
 
-//window on load
-window.onload = function(){
-    readOut(" ");
-}
+
 
