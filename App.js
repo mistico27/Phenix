@@ -224,11 +224,14 @@ async function getNews(){
         a.push(".........")
         a.push(e.title)
         a.push(".........")
-  
       });
       readOut(a)
     })
   }
+
+
+///adding new languages
+
 
 
 
