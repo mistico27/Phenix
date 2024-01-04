@@ -42,6 +42,10 @@ SimbaComs.push("close this youtube tab - to close opened youtube tab");
 SimbaComs.push("open github");
 SimbaComs.push("open my github profile");
 
+///simba tell me the weather
+let weatherStatement="";
+
+
 
 function weather(location) {
     const weatherCont = document.querySelector(".temp").querySelectorAll("*");
@@ -98,8 +102,6 @@ function autoSimba(){
 ///onload()
 window.onload = () =>{
     ///onStart
-   
-
     turnOn.addEventListener("onend",()=>{
         setTimeout(()=>{
             autoSimba();
@@ -149,9 +151,7 @@ window.onload = () =>{
     //internet set up
     navigator.onLine?(internet.textContent="online"):(internet.textContent="offline")
     setInterval(()=>{
-        
-        navigator.onLine?(internet.textContent="online"):(internet.textContent="offline")
- 
+        navigator.onLine?(internet.textContent="online"):(internet.textContent="offline") 
     },6000);
 }
 
@@ -208,6 +208,30 @@ recognition.onstart = function(){
     console.log("vr active");
 };
 
+
+
+async function getNews(){
+    var url = "https://newsapi.org/v2/top-headlines?country=mx&apiKey=b0712dc2e5814a1bb531e6f096b3d7d3"
+    var req = new Request(url)
+    await fetch(req).then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      let arrNews = data.articles
+      arrNews.length = 10
+      let a = []
+      arrNews.forEach((e,index) => {
+        a.push(index+1)
+        a.push(".........")
+        a.push(e.title)
+        a.push(".........")
+  
+      });
+      readOut(a)
+    })
+  }
+
+
+
 recognition.onresult = function(event){
     let current = event.resultIndex;
     let transcript=event.results[current][0].transcript;
@@ -227,6 +251,16 @@ recognition.onresult = function(event){
         setup.style.display="none";
     }
 
+    if(transcript.includes("small")){
+        readOut("ok sir getting smaller");
+        window.open(`${window.location.href}`,"newWindow","menubar=true,location=true,resizable=false,scrollbars=false,width=200,height=200,top=0,left=0")
+        window.close();
+    }
+
+    if(transcript.includes("give me the news")){
+        readOut("This are the list of the news sir");
+        getNews();
+    }
 
 
     if(transcript.includes("your commands")){
@@ -260,6 +294,9 @@ recognition.onresult = function(event){
         window.open(`https://www.youtube.com/results?search_query=${input}`);
     }   
 
+    if(transcript.includes("battery status")){
+        readOut("yes sir my current charging status is" + battery.textContent);
+    }
 
     if(transcript.includes("open my github")){
         readOut("sure sir, opening your project github i am happy to serve you ");
@@ -276,7 +313,51 @@ recognition.onresult = function(event){
         readOut("hola mama de christian i am trying to speak in spanish,estoy aprendiendo, que puedo hacer por ti");
     }   
 
+    if (transcript.includes("Thank you")) {
+        readOut("No problem i am here to help ya... de nada");
+    }
 
+    if(transcript.includes("weather report")) {
+        readOut("opening the weather report sir");
+        window.open(
+          `https://www.google.com/search?q=weather+in+${
+            JSON.parse(localStorage.getItem("jarvis_setup")).location
+          }`
+        );
+    }
+
+    if(transcript.includes("introduce yourself")){
+        readOut("hi my name is simba, but i am a fenix, my creator is Christian beltran,  so i am mexican i believe, and that is amazing, so lets code!! ");
+    }
+
+
+    // weather report
+    if (transcript.includes("what's the temperature")) {
+        readOut(weatherStatement);
+      }
+
+// info change
+    if (transcript.includes("change my information")) {
+    readOut("Opening the information tab sir");
+    localStorage.clear();
+    
+    if(window.innerWidth <= 400 ){
+      window.resizeTo(screen.width,screen.height)
+    }
+    setup.style.display = "flex";
+    setup.querySelector("button").addEventListener("click", userInfo);
+    }
+
+
+      // availability check
+    if (transcript.includes("are you there")) {
+        readOut("yes sir, what can i do for you");
+    }
+      // close voice recognition
+    if (transcript.includes("shut down")) {
+        readOut("Ok sir I will be see you in a few");
+        recognition.stop();
+    }
 
 }
 

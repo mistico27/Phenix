@@ -10,6 +10,10 @@
 }
 
 
+.new_simba_window {
+    display: none;
+}
+
 button{
     color:black;
     top:50%;
